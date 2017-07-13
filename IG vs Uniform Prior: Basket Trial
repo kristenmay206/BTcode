@@ -13,12 +13,13 @@ no.cores = 9 # no. of cpu cores used in mclapply
 # define simulated trial function 
 trial = function(it, h, K, gammaD, max.n, h0, h1, gammaF, gammaE, int1, intk, no.interim, AR, model,n.int.min,n.final.min, hyp1, hyp2){
 
+# true response rates
 if(h == 0){ p.sim = h0
-}else if(h == K){ p.sim = h1
-}else{ p.sim = c(h1[1:h],h0[(h+1):K]) }
-p.mid = (h0+h1)/2
-mu.h = mean(log(h1/(1-h1)) - log(h0/(1-h0))) 
+	}else if(h == K){ p.sim = h1
+	}else{ p.sim = c(h1[1:h],h0[(h+1):K]) }
 
+p.mid = (h0+h1)/2 # mid pt
+mu.h = mean(log(h1/(1-h1)) - log(h0/(1-h0))) # change in log odds from the null - lower level mean hyperparameter for mu
 n.iter = 10000 # number of mcmc samples for inference
 burn.in = 1000 # additional burn in + default 1000 in jags.model 
 keep = matrix(NA, nrow = no.interim*3, ncol = K) # keep track of when baskets drop out
@@ -26,12 +27,13 @@ n.interim = matrix(NA, nrow = no.interim*3 + 1, ncol = K) # number/basket enroll
 N.basket = {}
 yes.keep = {}
 
+# define initial values for mcmc sampler for different models
 if(model == 1){
-a = hyp2/2; b = hyp1**2*hyp2/2
-inits.list = list("prec" = 1, "mu" = mu.h)
+	a = hyp2/2; b = hyp1**2*hyp2/2
+	inits.list = list("prec" = 1, "mu" = mu.h)
 }else if(model == 2){
-a = hyp1; b = hyp2
-inits.list = list("sigma" = 1, "mu" = mu.h)
+	a = hyp1; b = hyp2
+	inits.list = list("sigma" = 1, "mu" = mu.h)
 }
 
 # generate enrollment times for each basket
@@ -49,6 +51,7 @@ for (i in 1:K){
 ## generate data ##
 yes = rbinom(K,n.interim[1,],p.sim); yes.keep = rbind(yes.keep,yes)
 
+## fit model ##
 fit = jags.model(file = paste("model",model,".txt",sep = ""), data = list("resp" = yes, "n" = N.basket, "K" = K, "p.0" = h0,"mu.h" = mu.h, "a" = a, "b" = b), inits = inits.list ,quiet = T) # default: 1000 burn in 
 update(fit,burn.in) # additional burn in
 p.post = coda.samples(fit,variable.names = "p",n.iter = n.iter)[[1]]
@@ -57,17 +60,16 @@ cont.bask.t = {}; dec = rep(NA,K); cont.bask.e = {}
 ## interim analyses ##
 	int.count = 1
 	for (i in 1:K){
-		if ( !(i %in% exclude.int) ) {
-	if (mean(p.post[,i] > p.mid[i]) < gammaF){ cont.bask.t[i] = 0 ; dec[i] = 0 # 0 means stop
-	}else{  cont.bask.t[i] = 1 }
-	if (mean(p.post[,i] > p.mid[i]) > gammaE){ cont.bask.e[i] = 0 ; dec[i] = 1
-	}else{  cont.bask.e[i] = 1 }
-	keep[int.count,i] = ifelse(cont.bask.t[i] == 1 & cont.bask.e[i] == 1, 1, NA)
+		if ( !(i %in% exclude.int) ) { 
+			if (mean(p.post[,i] > p.mid[i]) < gammaF){ cont.bask.t[i] = 0 ; dec[i] = 0 # 0 means stop
+			}else{  cont.bask.t[i] = 1 }
+		if (mean(p.post[,i] > p.mid[i]) > gammaE){ cont.bask.e[i] = 0 ; dec[i] = 1
+			}else{  cont.bask.e[i] = 1 }
+		keep[int.count,i] = ifelse(cont.bask.t[i] == 1 & cont.bask.e[i] == 1, 1, NA)
 		}else{ keep[int.count,i] = 1 } 
 	}
 
 	while(length(na.omit(dec)) != K){ 
-	#print(yes)
 		dropped = which(is.na(keep[int.count,]))
 		current.size = sum(N.basket)
 		K.star = which(!(1:K %in% dropped))
