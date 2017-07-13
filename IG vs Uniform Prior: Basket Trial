@@ -1,5 +1,6 @@
 # July 11, 2017
 # Prior specification of the variance parameters for a basket trial design using Bayesian hierarchical modeling
+# JAGS code is embedded at bottom: save in separate .txt file
 
 library(parallel)
 library(rjags)
@@ -272,5 +273,33 @@ colnames(out) = c("Hyp1","Hyp2","GammaD","AvgFWER","RgFWER","AvgErr","RgErr","Av
 
 # FWER under A = 0: check calibration
 print(all.results[(K+1),ind])
+
+############################################## JAGS CODE #####################################################
+# JAGS code for Model 1: save in separate file as 'model1.txt'
+
+model{
+	for (k in 1:K){ # basket
+		resp[k] ~ dbinom(p[k],n[k]) # data: resp and n
+		logit(p[k]) <- theta[k] + logit(p.0[k])
+		theta[k] ~ dnorm(mu,prec) # jags uses precision 
+	}
+		mu ~ dnorm(mu.h,0.1) 
+		prec ~ dgamma(a,b) 
+		sigma <- 1/sqrt(prec)
+}
+
+############################################## JAGS CODE #####################################################
+# JAGS code for Model 2: save in separate file as 'model2.txt'
+
+model{
+	for (k in 1:K){ # basket
+		resp[k] ~ dbinom(p[k],n[k]) # data: resp and n
+		logit(p[k]) <- theta[k] + logit(p.0[k])
+		theta[k] ~ dnorm(mu,prec) # jags uses precision 
+	}
+		mu ~ dnorm(mu.h,0.1) 
+		prec <- 1/sigma^2
+		sigma ~ dunif(a,b)
+}
 
 ########################################################################################################
