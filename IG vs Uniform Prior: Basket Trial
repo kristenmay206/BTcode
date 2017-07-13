@@ -8,7 +8,7 @@ no.cores = 9 # no. of cpu cores used in mclapply
 # note: as specified IG prior simulation study runs 4.5 hours
 # note: as specified Uniform prior simulation study runs 6.5 hours
 
-#setwd("G:/My Documents/new Basket Trials/code/Methods Paper 2/Paper Code")
+#setwd("G:/My Documents/Basket Trials/Paper Code")
 ########################################################################################################
 # define simulated trial function 
 trial = function(it, h, K, gammaD, max.n, h0, h1, gammaF, gammaE, int1, intk, no.interim, AR, model,n.int.min,n.final.min, hyp1, hyp2){
