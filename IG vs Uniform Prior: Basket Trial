@@ -1,6 +1,8 @@
 # July 11, 2017
-# Prior specification of the variance parameters for a basket trial design using Bayesian hierarchical modeling
-# JAGS code is embedded at bottom: save in separate .txt file
+# Manuscript: Prior specification of the variance parameters for a basket trial design using Bayesian hierarchical modeling
+# To run: you must create three files from the code below (a '.R' script and two '.txt' scripts)
+# The two '.txt' scripts contain the JAGS code, which is embedded at bottom
+# Save in separate files and name the files 'model1.txt' (for inverse-gamma prior) and 'model2.txt' (for uniform prior)
 
 library(parallel)
 library(rjags)
