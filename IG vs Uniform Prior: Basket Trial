@@ -104,7 +104,7 @@ cont.bask.t = {}; dec = rep(NA,K); cont.bask.e = {}
 				keep[int.count,i] = 1 # continue with not enough SS to evaluate
 			}else if ( N.basket[i] > n.final.min & N.basket[i] >= max.n ){ # final analysis 
 				if (int.count < no.interim*2){keep[int.count,i] = NA}
-				dec[i] = ifelse(mean(p.post[,i] > h0) > gammaD,1,0)
+				dec[i] = ifelse(mean(p.post[,i] > h0[i]) > gammaD,1,0)
 			}
 		} } 
 
