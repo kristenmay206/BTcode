@@ -157,8 +157,8 @@ scenarios = 0:K
 model = 1 # 2
 
 if(model == 1){
-	hyp1 = c(0.1,0.5,1,2) # prior mean for sigma2
-	hyp2 = c(0.01,0.1,0.5,1,2,5) # prior weight for prior mean
+	hyp1 = c(0.1,0.5,1,2,10) # prior mean for sigma2
+	hyp2 = c(0.01,0.1,0.5,1,2,5,10) # prior weight for prior mean
 }else if(model == 2){
 	hyp1 = c(0.01,0.05,0.3,0.5,0.71) # lower bound
 	hyp2 = c(1,2,3,10,100,10000) # upper bound
