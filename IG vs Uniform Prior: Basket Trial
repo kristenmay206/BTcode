@@ -10,6 +10,7 @@ no.cores = 9 # no. of cpu cores used in mclapply
 # note: as specified IG prior simulation study runs 4.5 hours
 # note: as specified Uniform prior simulation study runs 6.5 hours
 
+# output results (csv files)
 #setwd("G:/My Documents/Basket Trials/Paper Code")
 ########################################################################################################
 # define simulated trial function 
@@ -265,7 +266,7 @@ all.results.list = mclapply(1:nrow(combos),function(j, K, n.sim, max.n, h0, gamm
 
 # output
 all.results = matrix(data = unlist(all.results.list),ncol = nrow(combos), nrow = 8 + (no.interim*6+8)*K) # col are combos
-	write.csv(all.results,paste("AllResults_K5baskets_Model",model,".csv", sep = ""),row.names = F)
+	write.csv(all.results,paste("AllResults_K",K,"baskets_Model",model,".csv", sep = ""),row.names = F)
 print(Sys.time() - start)
 
 ind = seq(1,nrow(combos),by = K+1)
@@ -273,7 +274,7 @@ gammaD.seq = combos[which(combos[,1] == 0),4]
 out.combos = cbind(expand.grid(hyp1,hyp2),gammaD.seq)
 out = cbind(out.combos,t(sapply(ind,output)))
 colnames(out) = c("Hyp1","Hyp2","GammaD","AvgFWER","RgFWER","AvgErr","RgErr","AvgPow","RgPow","AvgEN","RgEN")
-	write.csv(data.frame(out),paste("TabularResults_K5baskets_Model",model,".csv", sep = ""),row.names = F)
+	write.csv(data.frame(out),paste("TabularResults_K",K,"baskets_Model",model,".csv", sep = ""),row.names = F)
 
 # FWER under A = 0: check calibration
 print(all.results[(K+1),ind])
